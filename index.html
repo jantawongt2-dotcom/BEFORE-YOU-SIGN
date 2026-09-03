@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeforeYouSign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#151F63;
+    --navy-deep:#0C1442;
+    --lime:#D6FA3B;
+    --lime-deep:#B9E01A;
+    --cream:#FBF6EA;
+    --ink:#151F63;
+    --ink-soft:#4A5290;
+    --paper:#FFFFFF;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    font-family:'Noto Sans Thai','Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  h1,h2,h3,.display{
+    font-family:'Space Grotesk','Noto Sans Thai',sans-serif;
+  }
+
+  .dotfield{
+    position:absolute; inset:0;
+    background-image: radial-gradient(currentColor 1.4px, transparent 1.4px);
+    background-size: 16px 16px;
+    opacity:.08;
+    pointer-events:none;
+  }
+
+  /* ---------- progress nav ---------- */
+  .progress-nav{
+    position:fixed;
+    right:26px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:40;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .progress-nav button{
+    width:10px; height:10px;
+    border-radius:50%;
+    border:1.5px solid var(--navy);
+    background:transparent;
+    cursor:pointer;
+    padding:0;
+    transition:background .25s ease, transform .25s ease, width .25s ease, border-radius .25s ease;
+  }
+  .progress-nav button.active{
+    background:var(--navy);
+    height:26px; width:10px;
+    border-radius:6px;
+  }
+  section.dark ~ .progress-nav button,
+  .progress-nav.on-dark button{ border-color:var(--lime); }
+  .progress-nav.on-dark button.active{ background:var(--lime); }
+
+  @media (max-width:720px){ .progress-nav{display:none;} }
+
+  /* ---------- top marker ---------- */
+  .topmark{
+    position:fixed; top:22px; left:26px; z-index:40;
+    display:flex; align-items:center; gap:10px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600; font-size:.85rem;
+    letter-spacing:.02em;
+    color:var(--navy);
+    mix-blend-mode:normal;
+  }
+  .topmark .num{
+    width:30px; height:30px; border-radius:50%;
+    background:var(--lime);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:.9rem;
+  }
+  section.dark .topmark, .topmark.on-dark{ color:var(--cream); }
+
+  /* ---------- sections ---------- */
+  section{
+    position:relative;
+    min-height:100svh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:120px 24px 90px;
+    overflow:hidden;
+  }
+  section.light{ background:var(--cream); color:var(--ink); }
+  section.dark{ background:var(--navy); color:var(--cream); }
+
+  .content{
+    position:relative;
+    z-index:2;
+    max-width:640px;
+    width:100%;
+    text-align:center;
+  }
+
+  .eyebrow-pill{
+    display:inline-block;
+    padding:9px 20px;
+    border-radius:999px;
+    background:var(--navy);
+    color:var(--lime);
+    font-weight:600;
+    font-size:.95rem;
+    margin-bottom:22px;
+  }
+  section.dark .eyebrow-pill{ background:var(--lime); color:var(--navy); }
+
+  /* ---------- section 1 : hero ---------- */
+  .hero-title{
+    font-size:clamp(2.6rem, 8vw, 4.4rem);
+    font-weight:700;
+    line-height:1;
+    letter-spacing:-.01em;
+  }
+  .hero-sub{
+    margin-top:8px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    letter-spacing:.18em;
+    font-size:.85rem;
+    color:var(--ink-soft);
+  }
+
+  .hand-wrap{
+    position:relative;
+    width:220px; height:220px;
+    margin:44px auto 30px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .burst{
+    position:absolute; inset:0;
+    fill:var(--lime);
+    animation:spin 26s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+  .hand-emoji{
+    position:relative;
+    font-size:5.4rem;
+    filter:drop-shadow(0 10px 18px rgba(21,31,99,.25));
+  }
+
+  .lede{
+    margin-top:10px;
+    font-size:1.02rem;
+    line-height:1.75;
+    color:var(--ink-soft);
+    max-width:480px;
+    margin-inline:auto;
+  }
+
+  .scroll-cue{
+    margin-top:46px;
+    font-size:.8rem;
+    color:var(--ink-soft);
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    animation:bob 2s ease-in-out infinite;
+  }
+  @keyframes bob{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(6px);} }
+
+  /* ---------- section 2 : culture cards ---------- */
+  .section-head{
+    font-size:clamp(1.9rem, 5vw, 2.6rem);
+    font-weight:700;
+    line-height:1.15;
+    margin-bottom:44px;
+  }
+
+  .culture-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    text-align:left;
+  }
+  @media (max-width:620px){ .culture-grid{ grid-template-columns:1fr; } }
+
+  .culture-card{
+    background:rgba(251,246,234,.06);
+    border:1px solid rgba(214,250,59,.25);
+    border-radius:20px;
+    padding:26px 22px;
+  }
+  .flags{ font-size:1.6rem; margin-bottom:10px; }
+  .culture-card h3{
+    font-size:1.15rem;
+    font-weight:700;
+    line-height:1.35;
+    margin-bottom:14px;
+  }
+  .tag{
+    display:inline-block;
+    background:var(--lime);
+    color:var(--navy);
+    font-weight:700;
+    font-size:.82rem;
+    padding:7px 14px;
+    border-radius:8px;
+    margin-bottom:14px;
+  }
+  .tag.warn{ background:transparent; border:1.5px solid var(--lime); color:var(--lime); }
+  .culture-card p{
+    font-size:.92rem;
+    line-height:1.7;
+    color:rgba(251,246,234,.75);
+  }
+
+  /* ---------- section 3 : why context differs ---------- */
+  .globe-wrap{
+    position:relative;
+    width:180px; height:180px;
+    margin:8px auto 30px;
+    font-size:5.4rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .bubble{
+    position:absolute;
+    background:var(--navy);
+    color:var(--cream);
+    font-size:1.15rem;
+    padding:6px 12px;
+    border-radius:14px;
+    font-weight:600;
+  }
+  .bubble.b1{ top:0; left:-6px; }
+  .bubble.b2{ bottom:6px; right:-16px; }
+
+  .reason-list{
+    margin-top:34px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    text-align:left;
+  }
+  .reason-item{
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+    background:var(--paper);
+    border:1px solid rgba(21,31,99,.08);
+    border-radius:16px;
+    padding:18px 20px;
+  }
+  .reason-icon{
+    flex:0 0 auto;
+    width:44px; height:44px;
+    border-radius:50%;
+    background:var(--lime);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem;
+  }
+  .reason-item h4{ font-size:1rem; font-weight:700; margin-bottom:4px; }
+  .reason-item p{ font-size:.9rem; line-height:1.6; color:var(--ink-soft); }
+
+  /* ---------- section 4 : context matters ---------- */
+  .cm-banner{
+    background:var(--lime);
+    color:var(--navy);
+    border-radius:20px;
+    padding:26px 30px;
+    font-weight:700;
+    font-size:clamp(1.5rem, 5vw, 2.1rem);
+    line-height:1.2;
+    margin-bottom:38px;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .checklist{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    text-align:left;
+    max-width:420px;
+    margin-inline:auto;
+  }
+  .check-row{
+    display:flex; align-items:center; gap:16px;
+    background:rgba(214,250,59,.06);
+    border:1px solid rgba(214,250,59,.3);
+    border-radius:14px;
+    padding:16px 20px;
+  }
+  .check-icon{
+    width:38px; height:38px; border-radius:50%;
+    background:var(--lime); color:var(--navy);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; flex:0 0 auto;
+  }
+  .check-row span.label{ font-weight:600; font-size:1rem; }
+
+  .divider{
+    width:80%;
+    max-width:340px;
+    margin:38px auto;
+    border-top:1.5px dashed rgba(251,246,234,.35);
+  }
+
+  .closer{
+    font-size:1.15rem;
+    line-height:1.7;
+    font-weight:500;
+    max-width:420px;
+    margin-inline:auto;
+  }
+  .closer .hand-tiny{ font-size:1.6rem; vertical-align:-4px; margin-inline-start:6px; }
+
+  footer{
+    background:var(--navy-deep);
+    color:rgba(251,246,234,.5);
+    text-align:center;
+    font-size:.8rem;
+    padding:28px;
+  }
+
+  .reveal{ opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="topmark" id="topmark"><span class="num">06</span><span>ROCK ON</span></div>
+
+<nav class="progress-nav" id="progressNav">
+  <button data-target="s1" class="active" aria-label="ไปที่หัวข้อ 1"></button>
+  <button data-target="s2" aria-label="ไปที่หัวข้อ 2"></button>
+  <button data-target="s3" aria-label="ไปที่หัวข้อ 3"></button>
+  <button data-target="s4" aria-label="ไปที่หัวข้อ 4"></button>
+</nav>
+
+<!-- SECTION 1 — HERO -->
+<section class="light" id="s1">
+  <div class="dotfield" style="color:var(--navy)"></div>
+  <div class="content reveal in">
+    <h1 class="hero-title">ROCK ON</h1>
+    <div class="hero-sub">BEFORE YOU SIGN</div>
+
+    <div class="hand-wrap">
+      <svg class="burst" viewBox="0 0 200 200" aria-hidden="true">
+        <polygon points="100,0 112,78 190,60 122,100 190,140 112,122 100,200 88,122 10,140 78,100 10,60 88,78"/>
+      </svg>
+      <span class="hand-emoji">🤘</span>
+    </div>
+
+    <div class="eyebrow-pill">ร็อกเกอร์ หรือ...?</div>
+    <p class="lede">
+      ท่าชูนิ้วชี้และนิ้วก้อยขึ้น โดยพับนิ้วกลางและนิ้วนางลง เป็นท่าที่คนทั่วไปรู้จักจากวัฒนธรรมดนตรีร็อกและเฮฟวีเมทัล
+      แต่ท่าเดียวกันนี้ไม่ได้แปลว่า "ร็อก" เสมอไปในทุกที่
+    </p>
+
+    <div class="scroll-cue">
+      <span>เลื่อนลงเพื่อดูต่อ</span>
+      <span>↓</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2 — MEANING BY CULTURE -->
+<section class="dark" id="s2">
+  <div class="dotfield" style="color:var(--lime)"></div>
+  <div class="content reveal">
+    <h2 class="section-head">ความหมาย<br>ในแต่ละวัฒนธรรม</h2>
+
+    <div class="culture-grid">
+      <div class="culture-card">
+        <div class="flags">🇺🇸 🇬🇧</div>
+        <h3>สหรัฐอเมริกา / สหราชอาณาจักร</h3>
+        <span class="tag">ROCK ON / ดนตรีร็อก</span>
+        <p>มักใช้ในคอนเสิร์ตหรือในกลุ่มแฟนเพลง เพื่อแสดงถึงความชื่นชอบ ความสนุก และการสนับสนุนดนตรีร็อก จึงกลายเป็นภาพจำของวัฒนธรรม Rock &amp; Metal</p>
+      </div>
+      <div class="culture-card">
+        <div class="flags">🇮🇹</div>
+        <h3>อิตาลี และบางพื้นที่ในยุโรป</h3>
+        <span class="tag warn">อาจมีความหมายเชิงลบ</span>
+        <p>เมื่อใช้ชี้ไปยังบุคคล อาจสื่อถึง "เขาถูกนอกใจ" หรือเป็นการดูถูกในบางบริบท</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3 — WHY MEANINGS DIFFER -->
+<section class="light" id="s3">
+  <div class="dotfield" style="color:var(--navy)"></div>
+  <div class="content reveal">
+    <h2 class="section-head">ทำไมความหมาย<br>ถึงต่างกัน?</h2>
+
+    <div class="globe-wrap">
+      <span class="bubble b1">•••</span>
+      🌐
+      <span class="bubble b2">🤘</span>
+    </div>
+
+    <p class="lede">เพราะท่าทางเดียวกันสามารถถูกตีความแตกต่างกันตามวัฒนธรรมและบริบท</p>
+
+    <div class="reason-list">
+      <div class="reason-item">
+        <div class="reason-icon">🎸</div>
+        <div>
+          <h4>ในโลกของดนตรี</h4>
+          <p>= การสนับสนุน ความสนุก ความเป็นพวกเดียวกัน</p>
+        </div>
+      </div>
+      <div class="reason-item">
+        <div class="reason-icon">💬</div>
+        <div>
+          <h4>ในบริบททางสังคม</h4>
+          <p>= การนอกใจหรือการถูกลบหลู่</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4 — CONTEXT MATTERS -->
+<section class="dark" id="s4">
+  <div class="dotfield" style="color:var(--lime)"></div>
+  <div class="content reveal">
+    <div class="cm-banner">CONTEXT MATTERS</div>
+    <p class="lede" style="color:rgba(251,246,234,.8); margin-bottom:30px;">ก่อนใช้ท่ากับคนต่างวัฒนธรรม ลองสังเกตว่า</p>
+
+    <div class="checklist">
+      <div class="check-row"><div class="check-icon">📍</div><span class="label">ทำที่ไหน?</span></div>
+      <div class="check-row"><div class="check-icon">👤</div><span class="label">ทำกับใคร?</span></div>
+      <div class="check-row"><div class="check-icon">❓</div><span class="label">ทำเพื่ออะไร?</span></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="closer">สำหรับคุณอาจเป็น Rock On<br>แต่สำหรับอีกคนอาจไม่ใช่<span class="hand-tiny">🤘</span></p>
+  </div>
+</section>
+
+<footer>BEFORE YOU SIGN</footer>
+
+<script>
+  const sections = document.querySelectorAll('section');
+  const navButtons = document.querySelectorAll('.progress-nav button');
+  const nav = document.getElementById('progressNav');
+  const topmark = document.getElementById('topmark');
+  const titleLabels = {
+    s1:'ROCK ON',
+    s2:'ความหมายในแต่ละวัฒนธรรม',
+    s3:'ทำไมความหมายถึงต่างกัน?',
+    s4:'CONTEXT MATTERS!'
+  };
+
+  navButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.getElementById(btn.dataset.target).scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+  const revealObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.querySelector('.reveal')?.classList.add('in');
+      }
+    });
+  }, {threshold:.35});
+  sections.forEach(s=>revealObserver.observe(s));
+
+  const navObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const id = entry.target.id;
+        navButtons.forEach(b=> b.classList.toggle('active', b.dataset.target===id));
+        const isDark = entry.target.classList.contains('dark');
+        nav.classList.toggle('on-dark', isDark);
+        topmark.classList.toggle('on-dark', isDark);
+        topmark.querySelector('span:last-child').textContent = titleLabels[id];
+      }
+    });
+  }, {threshold:.55});
+  sections.forEach(s=>navObserver.observe(s));
+</script>
+
+</body>
+</html>
